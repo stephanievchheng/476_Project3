@@ -17,6 +17,7 @@ log = log.decode()
 
 # Inialize log request counts 
 logcount = 0
+
 jancount = 0
 febcount = 0
 marcount = 0
@@ -30,8 +31,12 @@ octcount = 0
 novcount = 0
 deccount = 0
 
+failcount = 0
+redircount = 0
+
 # Define variables to use to search later
 word = "GET"
+
 month1 = "Jan"
 month2 = "Feb"
 month3 = "Mar"
@@ -45,16 +50,20 @@ month10 = "Oct"
 month11 = "Nov"
 month12 = "Dec"
 
+fail = "4"
+redir = "3"
+
 # Read lines in file
 lines = log.splitlines()
 for line in lines:
         match = re.match(regex, line)
         if match:
                 #print(match.group(3))
-                # Start counting requests 
+                # Start counting total number of requests: 
                 if word in match.group(3):
                         logcount = logcount+1
 
+                # Start counting requests per month: 
                 if month1 in match.group(2):
                         jancount = jancount+1
                 if month2 in match.group(2):
@@ -79,7 +88,15 @@ for line in lines:
                         novcount = novcount+1
                 if month12 in match.group(2):
                         deccount = deccount+1
-                      
+
+                # Count not successful requests 
+                if match.group(6)[0]==fail:
+                        failcount = failcount+1
+
+                # Count redirected requests  
+                if match.group(6)[0]==redir:
+                        redircount = redircount+1
+                
 
 print("Total requests made during the time period of this log: " + str(logcount))
 
@@ -97,12 +114,13 @@ print("Oct: " + str(octcount))
 print("Nov: " + str(novcount))
 print("Dec: " + str(deccount))
 
+# Percentage of failed requests:
+failpercent = (failcount/logcount) * 100
+print("Percentage of requests not successful: " + str(failpercent))
 
-print("Percentage of requests not successful: ")
-
-
-print("Percentage of requests redirected: ")
-
+# Percentage of redirected requests:
+redirpercent = (redircount/logcount) * 100
+print("Percentage of requests redirected: " + str(redirpercent))
 
 print("Most requested file: ")
 
